@@ -3,7 +3,6 @@
 This guide provides exact, up-to-date steps for configuring the Dash MCP Server with Claude Code CLI and Codex CLI.
 
 **Repository:** https://github.com/atdrendel/dash-mcp-server
-**Branch with fetch_documentation_content:** `get-docs`
 
 ---
 
@@ -12,24 +11,24 @@ This guide provides exact, up-to-date steps for configuring the Dash MCP Server 
 ### Quick Method (Recommended)
 
 ```bash
-claude mcp add --transport stdio dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs" "dash-mcp-server"
+claude mcp add --transport stdio dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git" "dash-mcp-server"
 ```
 
 ### With Scope Options
 
 **Local scope** (default - only in current project):
 ```bash
-claude mcp add --transport stdio dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs" "dash-mcp-server"
+claude mcp add --transport stdio dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git" "dash-mcp-server"
 ```
 
 **User scope** (available across all projects):
 ```bash
-claude mcp add --transport stdio dash-api --scope user -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs" "dash-mcp-server"
+claude mcp add --transport stdio dash-api --scope user -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git" "dash-mcp-server"
 ```
 
 **Project scope** (shared with team via `.mcp.json`):
 ```bash
-claude mcp add --transport stdio dash-api --scope project -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs" "dash-mcp-server"
+claude mcp add --transport stdio dash-api --scope project -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git" "dash-mcp-server"
 ```
 
 ### Verification
@@ -54,7 +53,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs",
+        "git+https://github.com/atdrendel/dash-mcp-server.git",
         "dash-mcp-server"
       ]
     }
@@ -71,7 +70,7 @@ Then restart Claude Code.
 ### Method 1: Using CLI Command
 
 ```bash
-codex mcp add dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs" "dash-mcp-server"
+codex mcp add dash-api -- uvx --from "git+https://github.com/atdrendel/dash-mcp-server.git" "dash-mcp-server"
 ```
 
 ### Method 2: Edit Config File Directly (Recommended)
@@ -81,7 +80,7 @@ Edit `~/.codex/config.toml`:
 ```toml
 [mcp_servers.dash-api]
 command = "uvx"
-args = ["--from", "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs", "dash-mcp-server"]
+args = ["--from", "git+https://github.com/atdrendel/dash-mcp-server.git", "dash-mcp-server"]
 ```
 
 **Important:**
@@ -93,7 +92,7 @@ args = ["--from", "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs
 ```toml
 [mcp_servers.dash-api]
 command = "uvx"
-args = ["--from", "git+https://github.com/atdrendel/dash-mcp-server.git@get-docs", "dash-mcp-server"]
+args = ["--from", "git+https://github.com/atdrendel/dash-mcp-server.git", "dash-mcp-server"]
 env = { CUSTOM_VAR = "value" }
 ```
 
