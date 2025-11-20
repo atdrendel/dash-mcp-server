@@ -50,16 +50,18 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "dash-api": {
-      "command": "uvx",
+      "command": "/bin/sh",
       "args": [
-        "--from",
-        "git+https://github.com/atdrendel/dash-mcp-server.git",
-        "dash-mcp-server"
+        "-l",
+        "-c",
+        "uvx --from git+https://github.com/atdrendel/dash-mcp-server.git dash-mcp-server"
       ]
     }
   }
 }
 ```
+
+**Note:** We use a login shell (`-l`) to ensure `uvx` is found in your PATH, since Claude Desktop runs with a limited PATH that may not include `~/.local/bin` where `uv` installs executables.
 
 Then restart Claude Code.
 
@@ -269,6 +271,31 @@ Enables full-text search indexing for a specific docset to improve search result
 ---
 
 ## **Troubleshooting**
+
+### `spawn uvx ENOENT` Error in Claude Desktop App
+
+If you see `spawn uvx ENOENT` in the Claude Desktop logs, it means `uvx` is not in Claude Desktop's PATH.
+
+**Solution:** Use a login shell wrapper in your config:
+
+```json
+{
+  "mcpServers": {
+    "dash-api": {
+      "command": "/bin/sh",
+      "args": [
+        "-l",
+        "-c",
+        "uvx --from git+https://github.com/atdrendel/dash-mcp-server.git dash-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+The `-l` flag runs a login shell, which sources your shell profile (`~/.zprofile`, `~/.bash_profile`, etc.) and ensures your full PATH is available.
+
+**Why this happens:** Claude Desktop runs with a limited PATH (`/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin`) that doesn't include `~/.local/bin`, where `uv` installs executables by default.
 
 ### Dash Not Found
 - Ensure Dash 8+ is installed from https://kapeli.com/dash
