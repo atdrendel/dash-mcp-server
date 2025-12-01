@@ -182,7 +182,20 @@ def estimate_tokens(obj) -> int:
 
 @mcp.tool()
 async def list_installed_docsets(ctx: Context) -> DocsetResults:
-    """List all installed documentation sets in Dash. An empty list is returned if the user has no docsets installed. 
+    """List all documentation sets the user has installed in Dash.
+
+    Dash is a macOS application that stores offline documentation for programming languages,
+    frameworks, and tools. The user has chosen which documentation sets (docsets) to install,
+    so this reflects their development environment and preferences.
+
+    Call this tool FIRST before searching, as you need docset identifiers for search_documentation.
+
+    Each docset includes:
+    - name: Human-readable name (e.g., "Python 3", "React")
+    - identifier: Use this for search_documentation's docset_identifiers parameter
+    - full_text_search: Whether content search is available ("enabled", "disabled", "indexing", or "not supported")
+
+    Returns an empty list if no docsets are installed.
     Results are automatically truncated if they would exceed 25,000 tokens."""
     try:
         base_url = await working_api_base_url(ctx)
@@ -246,14 +259,26 @@ async def search_documentation(
     max_results: int = 100,
 ) -> SearchResults:
     """
-    Search for documentation across docset identifiers and snippets.
-    
+    Search the user's installed documentation for API references, classes, functions, guides, and more.
+
+    Use this to find authoritative documentation from the user's chosen sources. Results include
+    a load_url field - pass this to fetch_documentation_content to retrieve the full page content.
+
+    By default, search matches API/symbol names (e.g., "useState", "DataFrame.merge"). To search
+    within page content (finding mentions in descriptions and guides), the docset needs full-text
+    search enabled - check the full_text_search field from list_installed_docsets.
+
     Args:
-        query: The search query string
-        docset_identifiers: Comma-separated list of docset identifiers to search in (from list_installed_docsets)
-        search_snippets: Whether to include snippets in search results
-        max_results: Maximum number of results to return (1-1000)
-    
+        query: The search query (API names, function names, concepts, etc.)
+        docset_identifiers: Comma-separated docset identifiers from list_installed_docsets (e.g., "python3,react,typescript")
+        search_snippets: Include user-saved code snippets from Dash in results (default: True)
+        max_results: Maximum results to return, 1-1000 (default: 100)
+
+    Typical workflow:
+        1. list_installed_docsets -> get identifiers
+        2. search_documentation -> find relevant entries
+        3. fetch_documentation_content -> get full details for specific entries
+
     Results are automatically truncated if they would exceed 25,000 tokens.
     """
     if not query.strip():
@@ -358,10 +383,23 @@ async def search_documentation(
 async def enable_docset_fts(ctx: Context, identifier: str) -> bool:
     """
     Enable full-text search for a specific docset.
-    
+
+    By default, search_documentation only matches API/symbol names (like "map", "filter", "useState").
+    Enabling full-text search (FTS) allows searching within the actual documentation content,
+    so you can find pages that mention concepts, patterns, or terms in their descriptions.
+
+    Example: Without FTS, searching "authentication" might return nothing. With FTS enabled,
+    it could find guides and API docs that discuss authentication in their content.
+
+    Check list_installed_docsets first - the full_text_search field shows current status:
+    - "enabled": Already active, no action needed
+    - "disabled": Can be enabled with this tool
+    - "indexing": Currently building the index, wait and retry
+    - "not supported": This docset doesn't support FTS
+
     Args:
-        identifier: The docset identifier (from list_installed_docsets)
-        
+        identifier: The docset identifier from list_installed_docsets
+
     Returns:
         True if FTS was successfully enabled, False otherwise
     """
